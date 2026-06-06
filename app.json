@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "Fitness Challenge Hub",
+    "slug": "fitness-challenge-hub",
+    "version": "1.0.0",
+    "scheme": "fitness-challenge-hub",
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-web-browser",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "tsconfigPaths": true
+    },
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fitnesshub.app"
+    },
+    "android": {
+      "package": "com.fitnesshub.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#4C6EF5"
+      },
+      "googleServicesFile": "./google-services.json"
+    }
+  }
+}

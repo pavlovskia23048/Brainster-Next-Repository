@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "553118533274",
+    "project_id": "fitness-ch-hub",
+    "storage_bucket": "fitness-ch-hub.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553118533274:android:dfd7519165851f5aff8123",
+        "android_client_info": {
+          "package_name": "com.fitnesshub.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgGses6zD3OPnOz8QlpdlHwvMphhV3IlA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,125 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    // Workouts collection
+    match /workouts/{workoutId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isOwner(resource.data.userId);
+    }
+
+    // Workout logs collection
+    match /workoutLogs/{logId} {
+      allow read: if isAuthenticated(); // Allow all authenticated users to view workout logs
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isOwner(resource.data.userId);
+    }
+
+    // Challenges collection
+    match /challenges/{challengeId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isOwner(resource.data.creatorId);
+      allow delete: if isOwner(resource.data.creatorId);
+    }
+
+    // Challenge progress collection
+    match /challengeProgress/{progressId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isOwner(resource.data.userId);
+      allow delete: if isOwner(resource.data.userId);
+    }
+
+    // Progress photos collection
+    match /progressPhotos/{photoId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isOwner(resource.data.userId);
+    }
+
+    // Measurements collection
+    match /measurements/{measurementId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isOwner(resource.data.userId);
+    }
+
+    // Exercises collection (read-only for all authenticated users)
+    match /exercises/{exerciseId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only admins can write (you'll need to do this manually)
+    }
+
+    // Achievements collection (read-only)
+    match /achievements/{achievementId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only admins can write
+    }
+
+    // User achievements collection
+    match /userAchievements/{userAchievementId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isOwner(resource.data.userId);
+    }
+
+    // Friendships collection
+    match /friendships/{friendshipId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() &&
+        request.auth.uid in resource.data.users;
+    }
+
+    // Workout invitations collection
+    match /workoutInvitations/{invitationId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.fromUserId ||
+        request.auth.uid == resource.data.toUserId
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.fromUserId);
+      allow update: if isAuthenticated() && (
+        request.auth.uid == resource.data.fromUserId ||
+        request.auth.uid == resource.data.toUserId
+      );
+      allow delete: if isAuthenticated() && (
+        request.auth.uid == resource.data.fromUserId ||
+        request.auth.uid == resource.data.toUserId
+      );
+    }
+
+    // Workout plans collection (AI-generated plans)
+    match /workoutPlans/{planId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isOwner(resource.data.userId);
+    }
+
+    // Notifications collection
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && isOwner(resource.data.userId);
+      allow delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+  }
+}

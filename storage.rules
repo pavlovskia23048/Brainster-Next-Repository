@@ -1,0 +1,60 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user owns the resource
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Helper function to validate file is an image
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    // Helper function to check file size (max 10MB)
+    function isValidSize() {
+      return request.resource.size < 10 * 1024 * 1024;
+    }
+
+    // Workout photos - users can upload to their own workout directories
+    match /workouts/{userId}/{workoutId}/{filename} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated()
+                   && isOwner(userId)
+                   && isImage()
+                   && isValidSize();
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+
+    // Progress photos - users can upload to their own progress directory
+    match /progress/{userId}/{photoId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated()
+                   && isOwner(userId)
+                   && isImage()
+                   && isValidSize();
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+
+    // User profile photos
+    match /users/{userId}/profile/{filename} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated()
+                   && isOwner(userId)
+                   && isImage()
+                   && isValidSize();
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+
+    // Deny all other paths
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
